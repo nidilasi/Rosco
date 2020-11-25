@@ -13,7 +13,8 @@ class NowPlayingService {
 
     var MRMediaRemoteGetNowPlayingInfo : MRMediaRemoteGetNowPlayingInfoFunction?
     var lastTrack: Track?
-
+    var isPlaying: Bool = false
+    
     init () {
         // Load framework
         let bundle = CFBundleCreate(kCFAllocatorDefault, NSURL(fileURLWithPath: "/System/Library/PrivateFrameworks/MediaRemote.framework"))
@@ -42,6 +43,8 @@ class NowPlayingService {
         NotificationCenter.default.addObserver(self, selector: #selector(infoChanged(_:)), name: Notification.Name("kMRMediaRemoteNowPlayingApplicationClientStateDidChange"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(infoChanged(_:)), name: Notification.Name("kMRNowPlayingPlaybackQueueChangedNotification"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(infoChanged(_:)), name: Notification.Name("kMRPlaybackQueueContentItemsChangedNotification"), object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(infoChanged(_:)), name: Notification.Name("kMRMediaRemoteNowPlayingApplicationIsPlayingDidChangeNotification"), object: nil)
     }
 
     func updateInfo() {
@@ -50,9 +53,13 @@ class NowPlayingService {
         }
 
         MRMediaRemoteGetNowPlayingInfo(DispatchQueue.main, { (information) in
-            if let artist = information["kMRMediaRemoteNowPlayingInfoArtist"] as? String,
-                let title = information["kMRMediaRemoteNowPlayingInfoTitle"] as? String {
-                self.sendUpdateTrackNotification(track: Track(name: title, artist: artist))
+            if (self.isPlaying) {
+                if let artist = information["kMRMediaRemoteNowPlayingInfoArtist"] as? String,
+                    let title = information["kMRMediaRemoteNowPlayingInfoTitle"] as? String {
+                    self.sendUpdateTrackNotification(track: Track(name: title, artist: artist))
+                } else {
+                    self.sendNotPlayingNotification()
+                }
             } else {
                 self.sendNotPlayingNotification()
             }
@@ -72,6 +79,10 @@ class NowPlayingService {
     }
 
     @objc func infoChanged(_ notification: Notification) {
+        // https://github.com/dimitarnestorov/MusicBar/blob/master/macos/GlobalState.m
+        if let state = notification.userInfo?["kMRMediaRemoteNowPlayingApplicationIsPlayingUserInfoKey"] as? Bool {
+            self.isPlaying = state
+        }
         updateInfo()
     }
 }

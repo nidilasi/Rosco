@@ -16,10 +16,13 @@ class RoscoView : NSVisualEffectView {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
 
+        isHidden = true
+        window?.backgroundColor = NSColor.clear;
+        
         NotificationCenter.default.addObserver(self, selector: #selector(didUpdateTrack(_:)), name: Notification.Name("RoscoUpdateTrack"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(notPlayingNotificationReceived(_:)), name: Notification.Name("RoscoNotPlaying"), object: nil)
         
-        maskImage = NSImage(size: NSSize(width: 100, height: 22), flipped: false) { rect in
+        maskImage = NSImage(size: NSSize(width: 100, height: 20), flipped: false) { rect in
             
             let bezierPath = NSBezierPath()
             bezierPath.move(to: NSPoint(x: 0, y: 22))
@@ -60,11 +63,17 @@ class RoscoView : NSVisualEffectView {
             return
         }
         
+        isHidden = false
+        window?.backgroundColor = NSColor.black
+        
         titleLabel.stringValue = track.name.truncate(length: 32, trailing: "…")
         artistNameLabel.stringValue = track.artist.truncate(length: 32, trailing: "…")
     }
     
     @objc func notPlayingNotificationReceived(_ notification: NSNotification) {
-        notPlaying()
+//        notPlaying()
+        
+        isHidden = true
+        window?.backgroundColor = NSColor.clear
     }
 }

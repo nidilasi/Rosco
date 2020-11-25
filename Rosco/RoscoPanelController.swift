@@ -13,9 +13,16 @@ class RoscoPanelController : NSWindowController {
     override func windowDidLoad() {
         if let window = window as? NSPanel {
             window.collectionBehavior = .canJoinAllSpaces
-            window.isFloatingPanel = true
             window.setFrameOrigin(NSPoint(x: 0, y: 0))
             window.backgroundColor = NSColor.clear
+            
+//            window.backgroundColor = NSColor.black
+//            window.backgroundColor = NSColor.black.withAlphaComponent(0.5)
+            
+            window.isFloatingPanel = true
+            window.level = NSWindow.Level(rawValue: NSWindow.Level.normal.rawValue - 1)
+            window.orderFront(nil)
+            window.ignoresMouseEvents = true
         }
     }
 }

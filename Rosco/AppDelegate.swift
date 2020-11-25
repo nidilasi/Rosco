@@ -27,6 +27,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         statusItem.button?.image = NSImage.init(named: NSImage.Name("status_bar_icon"))
         statusItem.menu = menu
         
+        menu.items[0].isHidden = true
+        menu.items[1].isHidden = true
+        
         // Set the display style from defaults
         let appearanceName = UserDefaults.standard.object(forKey: styleKey) as? NSAppearance.Name
         setStyleMenuStates(appearanceName: appearanceName)
