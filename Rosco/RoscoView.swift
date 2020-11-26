@@ -50,7 +50,7 @@ class RoscoView : NSVisualEffectView {
     }
     
     func notPlaying() {
-//        titleLabel.stringValue = ""
+//        titleLabel.stringValue = "Not playing"
 //        artistNameLabel.stringValue = ""
         
         NSAnimationContext.runAnimationGroup({ (context) -> Void in

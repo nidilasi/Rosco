@@ -23,8 +23,6 @@ class RoscoPanelController : NSWindowController {
             window.level = NSWindow.Level(rawValue: NSWindow.Level.normal.rawValue - 1)
             window.orderFront(nil)
             window.ignoresMouseEvents = true
-            
-            
         }
     }
 }
