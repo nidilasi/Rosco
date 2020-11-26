@@ -15,11 +15,6 @@ class RoscoView : NSVisualEffectView {
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
-
-        NSAnimationContext.runAnimationGroup({ (context) -> Void in
-                context.duration = TimeInterval(0.0)
-                window?.animator().alphaValue = 1
-            }, completionHandler: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(didUpdateTrack(_:)), name: Notification.Name("RoscoUpdateTrack"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(notPlayingNotificationReceived(_:)), name: Notification.Name("RoscoNotPlaying"), object: nil)
@@ -59,9 +54,9 @@ class RoscoView : NSVisualEffectView {
 //        artistNameLabel.stringValue = ""
         
         NSAnimationContext.runAnimationGroup({ (context) -> Void in
-                context.duration = TimeInterval(0.5)
-                window?.animator().alphaValue = 0
-            }, completionHandler: nil)
+            context.duration = TimeInterval(0.5)
+            window?.animator().alphaValue = 0
+        }, completionHandler: nil)
     }
 
     @objc func didUpdateTrack(_ notification: NSNotification) {
