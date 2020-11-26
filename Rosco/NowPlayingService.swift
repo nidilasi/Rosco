@@ -10,6 +10,9 @@ import Cocoa
 class NowPlayingService {
     typealias MRMediaRemoteRegisterForNowPlayingNotificationsFunction = @convention(c) (DispatchQueue) -> Void
     typealias MRMediaRemoteGetNowPlayingInfoFunction = @convention(c) (DispatchQueue, @escaping ([String: Any]) -> Void) -> Void
+    
+    typealias MRMediaRemoteGetNowPlayingApplicationIsPlayingFunction = @convention(c) (DispatchQueue, @escaping (Bool) -> Void) -> Void
+    var MRMediaRemoteGetNowPlayingApplicationIsPlaying : MRMediaRemoteGetNowPlayingApplicationIsPlayingFunction?
 
     var MRMediaRemoteGetNowPlayingInfo : MRMediaRemoteGetNowPlayingInfoFunction?
     var lastTrack: Track?
@@ -33,6 +36,20 @@ class NowPlayingService {
             fatalError("Failed to get function pointer: MRMediaRemoteGetNowPlayingInfo")
         }
         MRMediaRemoteGetNowPlayingInfo = unsafeBitCast(MRMediaRemoteGetNowPlayingInfoPointer, to: MRMediaRemoteGetNowPlayingInfoFunction.self)
+        
+    
+        // Check if music is already playing
+        guard let MRMediaRemoteGetNowPlayingApplicationIsPlayingPointer = CFBundleGetFunctionPointerForName(bundle, "MRMediaRemoteGetNowPlayingApplicationIsPlaying" as CFString) else {
+            fatalError("Failed to get function pointer: MRMediaRemoteGetNowPlayingApplicationIsPlaying")
+        }
+        MRMediaRemoteGetNowPlayingApplicationIsPlaying = unsafeBitCast(MRMediaRemoteGetNowPlayingApplicationIsPlayingPointer, to: MRMediaRemoteGetNowPlayingApplicationIsPlayingFunction.self)
+
+        if let ApplicationIsPlaying = self.MRMediaRemoteGetNowPlayingApplicationIsPlaying {
+            ApplicationIsPlaying(DispatchQueue.main, { (isPlaying) in
+                self.isPlaying = isPlaying
+                self.startupCheckWasTrue = !self.isPlaying
+            })
+        }
 
         registerNotifications()
         updateInfo()
