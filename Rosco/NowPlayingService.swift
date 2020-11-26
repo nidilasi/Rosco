@@ -18,9 +18,6 @@ class NowPlayingService {
     var lastTrack: Track?
     var isPlaying: Bool = false
     
-    var startupCheckTrack: Track?
-    var startupCheckWasTrue: Bool = false
-    
     init () {
         // Load framework
         let bundle = CFBundleCreate(kCFAllocatorDefault, NSURL(fileURLWithPath: "/System/Library/PrivateFrameworks/MediaRemote.framework"))
@@ -47,7 +44,6 @@ class NowPlayingService {
         if let ApplicationIsPlaying = self.MRMediaRemoteGetNowPlayingApplicationIsPlaying {
             ApplicationIsPlaying(DispatchQueue.main, { (isPlaying) in
                 self.isPlaying = isPlaying
-                self.startupCheckWasTrue = !self.isPlaying
             })
         }
 
@@ -75,15 +71,6 @@ class NowPlayingService {
             if let artist = information["kMRMediaRemoteNowPlayingInfoArtist"] as? String,
                 let title = information["kMRMediaRemoteNowPlayingInfoTitle"] as? String {
                 track = Track(name: title, artist: artist)
-            }
-            
-            if (!self.startupCheckWasTrue) {
-                if (self.isPlaying || (self.startupCheckTrack?.name != nil && self.startupCheckTrack?.name != track?.name)) {
-                    self.startupCheckWasTrue = true
-                    self.isPlaying = true
-                } else {
-                    self.startupCheckTrack = track
-                }
             }
             
             if track != nil && self.isPlaying {
