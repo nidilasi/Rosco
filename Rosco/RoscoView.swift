@@ -16,8 +16,10 @@ class RoscoView : NSVisualEffectView {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
 
-        isHidden = true
-        window?.backgroundColor = NSColor.clear;
+        NSAnimationContext.runAnimationGroup({ (context) -> Void in
+                context.duration = TimeInterval(0.0)
+                window?.animator().alphaValue = 1
+            }, completionHandler: nil)
         
         NotificationCenter.default.addObserver(self, selector: #selector(didUpdateTrack(_:)), name: Notification.Name("RoscoUpdateTrack"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(notPlayingNotificationReceived(_:)), name: Notification.Name("RoscoNotPlaying"), object: nil)
@@ -53,8 +55,13 @@ class RoscoView : NSVisualEffectView {
     }
     
     func notPlaying() {
-        titleLabel.stringValue = "Not Playing"
-        artistNameLabel.stringValue = ""
+//        titleLabel.stringValue = ""
+//        artistNameLabel.stringValue = ""
+        
+        NSAnimationContext.runAnimationGroup({ (context) -> Void in
+                context.duration = TimeInterval(0.5)
+                window?.animator().alphaValue = 0
+            }, completionHandler: nil)
     }
 
     @objc func didUpdateTrack(_ notification: NSNotification) {
@@ -63,17 +70,16 @@ class RoscoView : NSVisualEffectView {
             return
         }
         
-        isHidden = false
-        window?.backgroundColor = NSColor.black
+        titleLabel.stringValue = track.name.truncate(length: 48, trailing: "…")
+        artistNameLabel.stringValue = track.artist.truncate(length: 48, trailing: "…")
         
-        titleLabel.stringValue = track.name.truncate(length: 32, trailing: "…")
-        artistNameLabel.stringValue = track.artist.truncate(length: 32, trailing: "…")
+        NSAnimationContext.runAnimationGroup({ (context) -> Void in
+                context.duration = TimeInterval(0.5)
+                window?.animator().alphaValue = 1
+            }, completionHandler: nil)
     }
     
     @objc func notPlayingNotificationReceived(_ notification: NSNotification) {
-//        notPlaying()
-        
-        isHidden = true
-        window?.backgroundColor = NSColor.clear
+        notPlaying()
     }
 }
