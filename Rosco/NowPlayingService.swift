@@ -57,8 +57,11 @@ class NowPlayingService {
 
     func registerNotifications() {
         NotificationCenter.default.addObserver(self, selector: #selector(infoChanged(_:)), name: Notification.Name("kMRNowPlayingPlaybackQueueChangedNotification"), object: nil)
-        
         NotificationCenter.default.addObserver(self, selector: #selector(infoChanged(_:)), name: Notification.Name("kMRMediaRemoteNowPlayingApplicationIsPlayingDidChangeNotification"), object: nil)
+        
+        // not sure if these are required for some specific behaviour but doesn't look like that they change anything behaviour-wise
+//        NotificationCenter.default.addObserver(self, selector: #selector(infoChanged(_:)), name: Notification.Name("kMRPlaybackQueueContentItemsChangedNotification"), object: nil)
+//        NotificationCenter.default.addObserver(self, selector: #selector(infoChanged(_:)), name: Notification.Name("kMRMediaRemoteNowPlayingApplicationClientStateDidChange"), object: nil)
     }
 
     func updateInfo() {
@@ -67,6 +70,12 @@ class NowPlayingService {
         }
 
         MRMediaRemoteGetNowPlayingInfo(DispatchQueue.main, { (information) in
+            if information["kMRMediaRemoteNowPlayingInfoArtist"] == nil &&
+                information["kMRMediaRemoteNowPlayingInfoTitle"] != nil {
+                // in this case it's probably some youtube video from safari
+                return
+            }
+            
             var track: Track?
             if let artist = information["kMRMediaRemoteNowPlayingInfoArtist"] as? String,
                 let title = information["kMRMediaRemoteNowPlayingInfoTitle"] as? String {
