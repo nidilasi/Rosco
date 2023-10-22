@@ -79,6 +79,9 @@ class NowPlayingService {
             var track: Track?
             if let artist = information["kMRMediaRemoteNowPlayingInfoArtist"] as? String,
                 let title = information["kMRMediaRemoteNowPlayingInfoTitle"] as? String {
+                if (artist.count == 0) {
+                    return
+                }
                 track = Track(name: title, artist: artist)
             }
             
