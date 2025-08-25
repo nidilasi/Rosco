@@ -19,21 +19,40 @@ Bowtie development stopped in early 2012 with a comment that it would be release
 - [ ] Move to different points on the screen
 
 ### Requirements
-* OS X 10.14 Yosemite
-* Xcode 11 / Swift 5
+* macOS 11.0 Big Sur or later
+* Xcode 13+ / Swift 5.7+
 
 ### Install
 
-Run in Xcode
+#### Option 1: Command Line (Recommended)
+
+**Quick start:**
+```bash
+# Build the app
+make build
+# or
+./build.sh
+
+# Run the app
+make run
+# or
+./run.sh
+```
+
+**Available commands:**
+```bash
+make build    # Build the application
+make run      # Run the application  
+make clean    # Clean build artifacts
+make install  # Install to Applications folder
+make help     # Show help
+```
+
+#### Option 2: Xcode
 
 1. Navigate to root directory in Terminal
-3. Run `open Rosco.xcodeproj`
-
-To build and open from Terminal
-
-1. Navigate to root directory
-3. Run `xcodebuild`
-4. Run `open ./build/release/rosco.app`
+2. Run `open Rosco.xcodeproj`
+3. Build and run in Xcode
 
 ### Contact
 

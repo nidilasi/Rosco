@@ -16,6 +16,8 @@ class RoscoView : NSVisualEffectView {
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         
+        print("🎨 RoscoView initialized from storyboard")
+        
         NotificationCenter.default.addObserver(self, selector: #selector(didUpdateTrack(_:)), name: Notification.Name("RoscoUpdateTrack"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(notPlayingNotificationReceived(_:)), name: Notification.Name("RoscoNotPlaying"), object: nil)
         
@@ -61,17 +63,26 @@ class RoscoView : NSVisualEffectView {
 
     @objc func didUpdateTrack(_ notification: NSNotification) {
         guard let track = notification.object as? Track else {
+            print("❌ No track in notification")
             notPlaying()
             return
         }
         
+        print("🎵 Now playing: \(track.name) by \(track.artist)")
+        
         titleLabel.stringValue = track.name.truncate(length: 48, trailing: "…")
         artistNameLabel.stringValue = track.artist.truncate(length: 48, trailing: "…")
         
-        NSAnimationContext.runAnimationGroup({ (context) -> Void in
+        // Show the window if it's not already visible
+        if window?.alphaValue != 1 {
+            NSAnimationContext.runAnimationGroup({ (context) -> Void in
                 context.duration = TimeInterval(0.5)
                 window?.animator().alphaValue = 1
+                print("✅ Showing Rosco display with track info")
             }, completionHandler: nil)
+        } else {
+            print("🔄 Updating track info (already visible)")
+        }
     }
     
     @objc func notPlayingNotificationReceived(_ notification: NSNotification) {

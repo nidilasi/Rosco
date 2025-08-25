@@ -34,5 +34,9 @@
 	<string>Main</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Rosco displays currently playing music information from Spotify and other music apps on your desktop.</string>
+	<key>NSMediaLibraryUsageDescription</key>
+	<string>Rosco needs access to media information to show now playing tracks from music apps like Spotify.</string>
 </dict>
 </plist>
