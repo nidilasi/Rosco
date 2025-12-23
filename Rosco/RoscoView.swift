@@ -44,19 +44,24 @@ class RoscoView : NSVisualEffectView {
         
     }
     
-    override func viewWillMove(toWindow newWindow: NSWindow?) {
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
         // Default to not playing
-        notPlaying()
+        if window != nil {
+            notPlaying()
+        }
     }
-    
+
     func notPlaying() {
 //        titleLabel.stringValue = "Not playing"
 //        artistNameLabel.stringValue = ""
-        
-        NSAnimationContext.runAnimationGroup({ (context) -> Void in
-            context.duration = TimeInterval(0.5)
-            window?.animator().alphaValue = 0
-        }, completionHandler: nil)
+
+        DispatchQueue.main.async { [weak self] in
+            guard let window = self?.window else { return }
+            
+            NSAnimationContext.current.duration = 0.5
+            window.animator().alphaValue = 0
+        }
     }
 
     @objc func didUpdateTrack(_ notification: NSNotification) {
@@ -64,16 +69,20 @@ class RoscoView : NSVisualEffectView {
             notPlaying()
             return
         }
-        
-        titleLabel.stringValue = track.name.truncate(length: 48, trailing: "…")
-        artistNameLabel.stringValue = track.artist.truncate(length: 48, trailing: "…")
-        
-        NSAnimationContext.runAnimationGroup({ (context) -> Void in
-                context.duration = TimeInterval(0.5)
-                window?.animator().alphaValue = 1
-            }, completionHandler: nil)
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+
+            self.titleLabel.stringValue = track.name.truncate(length: 48, trailing: "…")
+            self.artistNameLabel.stringValue = track.artist.truncate(length: 48, trailing: "…")
+
+            guard let window = self.window else { return }
+
+            NSAnimationContext.current.duration = 0.5
+            window.animator().alphaValue = 1.0
+        }
     }
-    
+
     @objc func notPlayingNotificationReceived(_ notification: NSNotification) {
         notPlaying()
     }

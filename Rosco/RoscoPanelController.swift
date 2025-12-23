@@ -10,19 +10,25 @@ import AppKit
 
 class RoscoPanelController : NSWindowController {
 
+    
     override func windowDidLoad() {
-        if let window = window as? NSPanel {
-            window.collectionBehavior = .canJoinAllSpaces
-            window.setFrameOrigin(NSPoint(x: 0, y: 0))
-            
-            window.backgroundColor = NSColor.black
-            window.alphaValue = 0
-//            window.backgroundColor = NSColor.black.withAlphaComponent(0.5)
-            
-            window.isFloatingPanel = true
-            window.level = NSWindow.Level(rawValue: NSWindow.Level.normal.rawValue - 1)
-            window.orderFront(nil)
-            window.ignoresMouseEvents = true
-        }
+        super.windowDidLoad()
+
+        guard let panel = window as? NSPanel else { return }
+
+        panel.collectionBehavior = .canJoinAllSpaces
+        panel.setFrameOrigin(NSPoint(x: 0, y: 0))
+
+        panel.backgroundColor = .black
+        panel.alphaValue = 0
+        panel.isOpaque = false
+
+        panel.isFloatingPanel = true
+        panel.level = NSWindow.Level(rawValue: NSWindow.Level.normal.rawValue - 1)
+        panel.orderFront(nil)
+        panel.ignoresMouseEvents = true
+
+        // Ensure animations are enabled
+        panel.animationBehavior = .default
     }
 }

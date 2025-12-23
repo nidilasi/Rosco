@@ -5,92 +5,120 @@
 //  Created by Evan Robertson on 19/04/2015.
 //  Copyright (c) 2015 Evan Robertson. All rights reserved.
 //
+
 import Cocoa
 
 class NowPlayingService {
-    typealias MRMediaRemoteRegisterForNowPlayingNotificationsFunction = @convention(c) (DispatchQueue) -> Void
-    typealias MRMediaRemoteGetNowPlayingInfoFunction = @convention(c) (DispatchQueue, @escaping ([String: Any]) -> Void) -> Void
-    
-    typealias MRMediaRemoteGetNowPlayingApplicationIsPlayingFunction = @convention(c) (DispatchQueue, @escaping (Bool) -> Void) -> Void
-    var MRMediaRemoteGetNowPlayingApplicationIsPlaying : MRMediaRemoteGetNowPlayingApplicationIsPlayingFunction?
-
-    var MRMediaRemoteGetNowPlayingInfo : MRMediaRemoteGetNowPlayingInfoFunction?
     var lastTrack: Track?
     var isPlaying: Bool = false
-    
-    init () {
-        // Load framework
-        let bundle = CFBundleCreate(kCFAllocatorDefault, NSURL(fileURLWithPath: "/System/Library/PrivateFrameworks/MediaRemote.framework"))
+    private var mediaControlProcess: Process?
+    private var outputPipe: Pipe?
 
-        guard let MRMediaRemoteRegisterForNowPlayingNotificationsPointer = CFBundleGetFunctionPointerForName(bundle, "MRMediaRemoteRegisterForNowPlayingNotifications" as CFString) else {
-            fatalError("Failed to get function pointer: MRMediaRemoteGetNowPlayingInfo")
-        }
-
-        let MRMediaRemoteRegisterForNowPlayingNotifications = unsafeBitCast(MRMediaRemoteRegisterForNowPlayingNotificationsPointer, to: MRMediaRemoteRegisterForNowPlayingNotificationsFunction.self)
-        MRMediaRemoteRegisterForNowPlayingNotifications(DispatchQueue.main);
-
-        guard let MRMediaRemoteGetNowPlayingInfoPointer = CFBundleGetFunctionPointerForName(bundle, "MRMediaRemoteGetNowPlayingInfo" as CFString) else {
-            fatalError("Failed to get function pointer: MRMediaRemoteGetNowPlayingInfo")
-        }
-        MRMediaRemoteGetNowPlayingInfo = unsafeBitCast(MRMediaRemoteGetNowPlayingInfoPointer, to: MRMediaRemoteGetNowPlayingInfoFunction.self)
-        
-    
-        // Check if music is already playing
-        guard let MRMediaRemoteGetNowPlayingApplicationIsPlayingPointer = CFBundleGetFunctionPointerForName(bundle, "MRMediaRemoteGetNowPlayingApplicationIsPlaying" as CFString) else {
-            fatalError("Failed to get function pointer: MRMediaRemoteGetNowPlayingApplicationIsPlaying")
-        }
-        MRMediaRemoteGetNowPlayingApplicationIsPlaying = unsafeBitCast(MRMediaRemoteGetNowPlayingApplicationIsPlayingPointer, to: MRMediaRemoteGetNowPlayingApplicationIsPlayingFunction.self)
-
-        if let ApplicationIsPlaying = self.MRMediaRemoteGetNowPlayingApplicationIsPlaying {
-            ApplicationIsPlaying(DispatchQueue.main, { (isPlaying) in
-                self.isPlaying = isPlaying
-            })
-        }
-
-        registerNotifications()
-        updateInfo()
+    init() {
+        startMediaControlStream()
     }
 
     deinit {
-        NotificationCenter.default.removeObserver(self)
+        stopMediaControlStream()
     }
 
-    func registerNotifications() {
-        NotificationCenter.default.addObserver(self, selector: #selector(infoChanged(_:)), name: Notification.Name("kMRNowPlayingPlaybackQueueChangedNotification"), object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(infoChanged(_:)), name: Notification.Name("kMRMediaRemoteNowPlayingApplicationIsPlayingDidChangeNotification"), object: nil)
-        
-        // not sure if these are required for some specific behaviour but doesn't look like that they change anything behaviour-wise
-//        NotificationCenter.default.addObserver(self, selector: #selector(infoChanged(_:)), name: Notification.Name("kMRPlaybackQueueContentItemsChangedNotification"), object: nil)
-//        NotificationCenter.default.addObserver(self, selector: #selector(infoChanged(_:)), name: Notification.Name("kMRMediaRemoteNowPlayingApplicationClientStateDidChange"), object: nil)
-    }
+    private func startMediaControlStream() {
+        mediaControlProcess = Process()
+        outputPipe = Pipe()
 
-    func updateInfo() {
-        guard let MRMediaRemoteGetNowPlayingInfo = self.MRMediaRemoteGetNowPlayingInfo else {
+        guard let process = mediaControlProcess, let pipe = outputPipe else {
+            print("Failed to create process or pipe")
             return
         }
 
-        MRMediaRemoteGetNowPlayingInfo(DispatchQueue.main, { (information) in
-            if information["kMRMediaRemoteNowPlayingInfoArtist"] == nil &&
-                information["kMRMediaRemoteNowPlayingInfoTitle"] != nil {
-                // in this case it's probably some youtube video from safari
+        process.executableURL = URL(fileURLWithPath: "/opt/homebrew/bin/media-control")
+        process.arguments = ["stream", "--no-diff"]
+        process.standardOutput = pipe
+        process.standardError = pipe
+        var buffer = Data()
+
+        // Handle output asynchronously
+        pipe.fileHandleForReading.readabilityHandler = { [weak self] fileHandle in
+            let data = fileHandle.availableData
+            guard !data.isEmpty else { return }
+            
+            buffer.append(data)
+
+            while let range = buffer.firstRange(of: Data([0x0A])) { // '\n'
+                let lineData = buffer.subdata(in: buffer.startIndex..<range.lowerBound)
+                buffer.removeSubrange(buffer.startIndex...range.lowerBound)
+
+                if let line = String(data: lineData, encoding: .utf8) {
+                    guard !line.isEmpty else { continue }
+                    self?.parseMediaControlOutput(line)
+                }
+            }
+        }
+
+        do {
+            try process.run()
+            print("media-control stream started successfully")
+        } catch {
+            print("Failed to start media-control: \(error)")
+        }
+    }
+
+    private func stopMediaControlStream() {
+        mediaControlProcess?.terminate()
+        outputPipe?.fileHandleForReading.readabilityHandler = nil
+        mediaControlProcess = nil
+        outputPipe = nil
+    }
+
+    private func parseMediaControlOutput(_ jsonString: String) {
+        // Skip empty lines or lines that don't start with '{'
+        let trimmed = jsonString.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty, trimmed.hasPrefix("{") else { return }
+
+        guard let data = trimmed.data(using: .utf8) else { return }
+
+        do {
+            guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                  let payload = json["payload"] as? [String: Any],
+                  !payload.isEmpty else {
                 return
             }
-            
-            var track: Track?
-            if let artist = information["kMRMediaRemoteNowPlayingInfoArtist"] as? String,
-                let title = information["kMRMediaRemoteNowPlayingInfoTitle"] as? String {
-                if (artist.count == 0) {
-                    return
+
+            // Extract playback information from payload
+            let title = payload["title"] as? String
+            let artist = payload["artist"] as? String
+            let playing = payload["playing"] as? Bool ?? false
+
+            // Update playing state
+            let wasPlaying = self.isPlaying
+            self.isPlaying = playing
+
+            // Filter out content without artist (e.g., YouTube videos from Safari)
+            guard let artistString = artist, !artistString.isEmpty else {
+                if wasPlaying {
+                    self.sendNotPlayingNotification()
                 }
-                track = Track(name: title, artist: artist)
+                return
             }
-            
-            if track != nil && self.isPlaying {
-                self.sendUpdateTrackNotification(track: track!)
+
+            // Create track if we have both title and artist
+            if let titleString = title, !titleString.isEmpty {
+                let track = Track(name: titleString, artist: artistString)
+
+                if self.isPlaying {
+                    self.sendUpdateTrackNotification(track: track)
+                } else {
+                    self.sendNotPlayingNotification()
+                }
             } else {
-                self.sendNotPlayingNotification()
+                if wasPlaying {
+                    self.sendNotPlayingNotification()
+                }
             }
-        })
+
+        } catch let error {
+            print(error.localizedDescription)
+        }
     }
 
     func sendUpdateTrackNotification(track: Track) {
@@ -103,13 +131,5 @@ class NowPlayingService {
     func sendNotPlayingNotification() {
         lastTrack = nil
         NotificationCenter.default.post(name: Notification.Name("RoscoNotPlaying"), object: nil)
-    }
-
-    @objc func infoChanged(_ notification: Notification) {
-        // https://github.com/dimitarnestorov/MusicBar/blob/master/macos/GlobalState.m
-        if let state = notification.userInfo?["kMRMediaRemoteNowPlayingApplicationIsPlayingUserInfoKey"] as? Bool {
-            self.isPlaying = state
-        }
-        updateInfo()
     }
 }
