@@ -86,27 +86,22 @@ class NowPlayingService {
 
             // Extract playback information from payload
             let isMusicApp = payload["isMusicApp"] as? Bool ?? false
+//            let mediaType = payload["mediaType"] as? String ?? "no mediaType"
+//            let bundleIdentifier = payload["bundleIdentifier"] as? String ?? "no bundleIdentifier"
             let title = payload["title"] as? String
             let artist = payload["artist"] as? String
             let playing = payload["playing"] as? Bool ?? false
             
-            // filtering possible by "isMusicApp", "mediaType" and "bundleIdentifer"
-            if !isMusicApp {
-                let mediaType = payload["mediaType"] as? String ?? "no mediaType"
-                let bundleIdentifier = payload["bundleIdentifier"] as? String ?? "no bundleIdentifier"
-                
-                print("-----------")
-                print("no music app (\(bundleIdentifier)), skipping")
-                print("mediaType \(mediaType)")
-                print("bundleIdentifier \(bundleIdentifier)")
-                return
-            }
-
-            
-            print("update nowplaying state to \(playing) from \(self.isPlaying)")
             // Update playing state
             let wasPlaying = self.isPlaying
-            self.isPlaying = playing
+            
+            // filtering possible by "isMusicApp", "mediaType" and "bundleIdentifer"
+            // we cannot just skip these states, otherwise Rosco would never update when
+            // ... switching from a Music app to a Safari/Youtube video for example while
+            // ... keeping the Music app running. the Music app needs to be re-activated by
+            // ... pausing/unpausing before we get ANY event from it again
+            // this is due to media-control limitations and how the nowplaying control works
+            self.isPlaying = playing && isMusicApp
 
             // Filter out content without artist (e.g., YouTube videos from Safari)
             guard let artistString = artist, !artistString.isEmpty else {
