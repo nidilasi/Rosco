@@ -19,8 +19,8 @@ Bowtie development stopped in early 2012 with a comment that it would be release
 - [ ] Move to different points on the screen
 
 ### Requirements
-* OS X 10.14 Yosemite
-* Xcode 11 / Swift 5
+* https://github.com/ungive/media-control (`brew install media-control`)
+* and something something
 
 ### Install
 
