@@ -85,10 +85,25 @@ class NowPlayingService {
             }
 
             // Extract playback information from payload
+            let isMusicApp = payload["isMusicApp"] as? Bool ?? false
             let title = payload["title"] as? String
             let artist = payload["artist"] as? String
             let playing = payload["playing"] as? Bool ?? false
+            
+            // filtering possible by "isMusicApp", "mediaType" and "bundleIdentifer"
+            if !isMusicApp {
+                let mediaType = payload["mediaType"] as? String ?? "no mediaType"
+                let bundleIdentifier = payload["bundleIdentifier"] as? String ?? "no bundleIdentifier"
+                
+                print("-----------")
+                print("no music app (\(bundleIdentifier)), skipping")
+                print("mediaType \(mediaType)")
+                print("bundleIdentifier \(bundleIdentifier)")
+                return
+            }
 
+            
+            print("update nowplaying state to \(playing) from \(self.isPlaying)")
             // Update playing state
             let wasPlaying = self.isPlaying
             self.isPlaying = playing
