@@ -101,7 +101,7 @@ class NowPlayingService {
             // ... keeping the Music app running. the Music app needs to be re-activated by
             // ... pausing/unpausing before we get ANY event from it again
             // this is due to media-control limitations and how the nowplaying control works
-            self.isPlaying = playing && isMusicApp
+            self.isPlaying = playing// && isMusicApp
 
             // Filter out content without artist (e.g., YouTube videos from Safari)
             guard let artistString = artist, !artistString.isEmpty else {
