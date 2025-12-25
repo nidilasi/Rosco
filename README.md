@@ -1,7 +1,6 @@
 # Rosco
 Native Mac OS X desktop music accessory written in Swift
 
-![Rosco Desktop Image](preview.png)
 
 Inspired by [Bowtie app](http://bowtieapp.com) and [Unnamed Theme](http://beautifulblood.deviantart.com/art/Unnamed-255040591).
 Bowtie development stopped in early 2012 with a comment that it would be released on Github. While it has a great set of features I wanted to simplify the idea for my needs and introduce some new features.
