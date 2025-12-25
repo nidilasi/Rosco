@@ -69,6 +69,18 @@ class NowPlayingService {
         mediaControlProcess = nil
         outputPipe = nil
     }
+    
+    private func isMusicPlayerApp(bundleIdentifier: String) -> Bool {
+        print("bundleIdentifier: \(bundleIdentifier)")
+        
+        let allowedIdentifiers = [
+            "com.apple.Music",
+            "com.spotify.client",
+            "org.jeffvli.feishin"
+        ]
+        
+        return allowedIdentifiers.contains(bundleIdentifier)
+    }
 
     private func parseMediaControlOutput(_ jsonString: String) {
         // Skip empty lines or lines that don't start with '{'
@@ -85,9 +97,8 @@ class NowPlayingService {
             }
 
             // Extract playback information from payload
-            let isMusicApp = payload["isMusicApp"] as? Bool ?? false
+            let bundleIdentifier = payload["bundleIdentifier"] as? String ?? "none"
 //            let mediaType = payload["mediaType"] as? String ?? "no mediaType"
-//            let bundleIdentifier = payload["bundleIdentifier"] as? String ?? "no bundleIdentifier"
             let title = payload["title"] as? String
             let artist = payload["artist"] as? String
             let playing = payload["playing"] as? Bool ?? false
@@ -95,13 +106,13 @@ class NowPlayingService {
             // Update playing state
             let wasPlaying = self.isPlaying
             
-            // filtering possible by "isMusicApp", "mediaType" and "bundleIdentifer"
+            // filtering possible by "bundleIdentifer" & "mediaType"
             // we cannot just skip these states, otherwise Rosco would never update when
             // ... switching from a Music app to a Safari/Youtube video for example while
             // ... keeping the Music app running. the Music app needs to be re-activated by
             // ... pausing/unpausing before we get ANY event from it again
             // this is due to media-control limitations and how the nowplaying control works
-            self.isPlaying = playing// && isMusicApp
+            self.isPlaying = playing && isMusicPlayerApp(bundleIdentifier: bundleIdentifier)
 
             // Filter out content without artist (e.g., YouTube videos from Safari)
             guard let artistString = artist, !artistString.isEmpty else {
