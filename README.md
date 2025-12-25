@@ -6,17 +6,10 @@ Native Mac OS X desktop music accessory written in Swift
 Inspired by [Bowtie app](http://bowtieapp.com) and [Unnamed Theme](http://beautifulblood.deviantart.com/art/Unnamed-255040591).
 Bowtie development stopped in early 2012 with a comment that it would be released on Github. While it has a great set of features I wanted to simplify the idea for my needs and introduce some new features.
 
-
-
 ### Features
 - [x] Modern styling using [NSVisualEffectView](https://developer.apple.com/library/mac/documentation/Foundation/Reference/NSVisualEffectView_Class/)
 - [x] Light and Dark Vibrancy Themes
 - [x] Supports system now playing API
-
-### Future Development
-- [ ] Show now playing application icon
-- [ ] Allow for resizing/scaling
-- [ ] Move to different points on the screen
 
 ### Requirements
 * https://github.com/ungive/media-control (`brew install media-control`)
@@ -24,23 +17,7 @@ Bowtie development stopped in early 2012 with a comment that it would be release
 
 ### Install
 
-Run in Xcode
+You may want to adjust the allowed bundleIdentifiers in `NowPlayingController.swift::isMusicPlayerApp` to suit your needs before building. Currently only Apple's Music app, Spotify and Feishin are considered music player apps.
 
-1. Navigate to root directory in Terminal
-3. Run `open Rosco.xcodeproj`
-
-To build and open from Terminal
-
-1. Navigate to root directory
-3. Run `xcodebuild`
-4. Run `open ./build/release/rosco.app`
-
-### Contact
-
-Evan Robertson
-* http://github.com/evanrobertson
-* evanjonr@gmail.com
-
-### License
-
-Rosco is available under the MIT License. See the LICENSE file for more details.
+- run the `build.sh` script
+- or open and run it from Xcode

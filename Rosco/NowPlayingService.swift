@@ -71,14 +71,12 @@ class NowPlayingService {
     }
     
     private func isMusicPlayerApp(bundleIdentifier: String) -> Bool {
-        print("bundleIdentifier: \(bundleIdentifier)")
-        
+//        print("bundleIdentifier: \(bundleIdentifier)")
         let allowedIdentifiers = [
             "com.apple.Music",
             "com.spotify.client",
             "org.jeffvli.feishin"
         ]
-        
         return allowedIdentifiers.contains(bundleIdentifier)
     }
 
