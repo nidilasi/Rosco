@@ -20,17 +20,17 @@ class RoscoView : NSVisualEffectView {
         NotificationCenter.default.addObserver(self, selector: #selector(notPlayingNotificationReceived(_:)), name: Notification.Name("RoscoNotPlaying"), object: nil)
         
         maskImage = NSImage(size: NSSize(width: 100, height: 20), flipped: false) { rect in
-            
+
             let bezierPath = NSBezierPath()
-            bezierPath.move(to: NSPoint(x: 0, y: 22))
-            bezierPath.curve(to: NSPoint(x: 13, y: 22), controlPoint1: NSPoint(x: 0, y: 22), controlPoint2: NSPoint(x: -8, y: 22))
-            bezierPath.curve(to: NSPoint(x: 58, y: 8), controlPoint1: NSPoint(x: 34, y: 22), controlPoint2: NSPoint(x: 43, y: 14))
+            bezierPath.move(to: NSPoint(x: 0, y: 20))
+            bezierPath.curve(to: NSPoint(x: 13, y: 20), controlPoint1: NSPoint(x: 0, y: 20), controlPoint2: NSPoint(x: -8, y: 20))
+            bezierPath.curve(to: NSPoint(x: 58, y: 8), controlPoint1: NSPoint(x: 34, y: 20), controlPoint2: NSPoint(x: 43, y: 14))
             bezierPath.curve(to: NSPoint(x: 100, y: 0), controlPoint1: NSPoint(x: 73, y: 2), controlPoint2: NSPoint(x: 100, y: 0))
             bezierPath.line(to: NSPoint(x: 0, y: 0))
-            bezierPath.line(to: NSPoint(x: 0, y: 22))
+            bezierPath.line(to: NSPoint(x: 0, y: 20))
             bezierPath.close()
             bezierPath.fill()
-            
+
             return true
         }
         maskImage?.capInsets = NSEdgeInsets(top: 0.0, left: 1.0, bottom: 0.0, right: 88.0)
