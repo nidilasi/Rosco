@@ -14,12 +14,13 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet weak var systemDefaultStyleMenuItem: NSMenuItem!
     @IBOutlet weak var lightMenuItem: NSMenuItem!
     @IBOutlet weak var darkMenuItem: NSMenuItem!
-    
+
     let styleKey = "RoscoStyle";
-    
+
     let statusItem = NSStatusBar.system.statusItem(withLength:NSStatusItem.squareLength)
-    
+
     var nowPlayingService: NowPlayingService?
+    var settingsWindowController: SettingsWindowController?
     
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
@@ -85,6 +86,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         let appearanceName = NSAppearance.Name.vibrantDark
         setStyleMenuStates(appearanceName: appearanceName)
         setAppStyle(appearanceName: appearanceName)
+    }
+
+    @IBAction func openSettings(_ sender: Any) {
+        if settingsWindowController == nil {
+            settingsWindowController = SettingsWindowController()
+        }
+
+        settingsWindowController?.showWindow(nil)
+        NSApp.activate(ignoringOtherApps: true)
     }
 }
 

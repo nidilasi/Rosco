@@ -17,7 +17,9 @@ Bowtie development stopped in early 2012 with a comment that it would be release
 
 ### Install
 
-You may want to adjust the allowed bundleIdentifiers in `NowPlayingController.swift::isMusicPlayerApp` to suit your needs before building. Currently only Apple's Music app, Spotify and Feishin are considered music player apps.
-
 - run the `build.sh` script
 - or open and run it from Xcode
+
+### Configuration
+
+- there's a settings menu in the menu bar item. in this menu you can define which apps to or not to track

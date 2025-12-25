@@ -72,12 +72,7 @@ class NowPlayingService {
     
     private func isMusicPlayerApp(bundleIdentifier: String) -> Bool {
 //        print("bundleIdentifier: \(bundleIdentifier)")
-        let allowedIdentifiers = [
-            "com.apple.Music",
-            "com.spotify.client",
-            "org.jeffvli.feishin"
-        ]
-        return allowedIdentifiers.contains(bundleIdentifier)
+        return AppSettings.shared.shouldAllowApp(bundleIdentifier: bundleIdentifier)
     }
 
     private func parseMediaControlOutput(_ jsonString: String) {

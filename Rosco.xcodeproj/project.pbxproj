@@ -16,6 +16,8 @@
 		20CE9AD91ADFA7DF00258EDA /* RoscoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20CE9AD81ADFA7DF00258EDA /* RoscoTests.swift */; };
 		20CE9AE31ADFA80D00258EDA /* RoscoPanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20CE9AE21ADFA80D00258EDA /* RoscoPanelController.swift */; };
 		20CE9AE71ADFA9E800258EDA /* RoscoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20CE9AE61ADFA9E800258EDA /* RoscoView.swift */; };
+		AA1234571AE4717D005C398A /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1234561AE4717D005C398A /* AppSettings.swift */; };
+		AA1234591AE4717D005C398A /* SettingsWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA1234581AE4717D005C398A /* SettingsWindowController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +59,8 @@
 		20CE9AD81ADFA7DF00258EDA /* RoscoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoscoTests.swift; sourceTree = "<group>"; };
 		20CE9AE21ADFA80D00258EDA /* RoscoPanelController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoscoPanelController.swift; sourceTree = "<group>"; };
 		20CE9AE61ADFA9E800258EDA /* RoscoView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoscoView.swift; sourceTree = "<group>"; };
+		AA1234561AE4717D005C398A /* AppSettings.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		AA1234581AE4717D005C398A /* SettingsWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsWindowController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -128,6 +132,8 @@
 				203AEA511AE3677B00B59120 /* Services */,
 				20CE9ACB1ADFA7DF00258EDA /* Main.storyboard */,
 				20CE9AC51ADFA7DF00258EDA /* AppDelegate.swift */,
+				AA1234561AE4717D005C398A /* AppSettings.swift */,
+				AA1234581AE4717D005C398A /* SettingsWindowController.swift */,
 				20CE9AE21ADFA80D00258EDA /* RoscoPanelController.swift */,
 				20CE9AE61ADFA9E800258EDA /* RoscoView.swift */,
 				202697F41ADFCE9B006DD45A /* Track.swift */,
@@ -267,6 +273,8 @@
 				2017D4891AE4717D005C398A /* StringExtensions.swift in Sources */,
 				20CE9AE31ADFA80D00258EDA /* RoscoPanelController.swift in Sources */,
 				20CE9AC61ADFA7DF00258EDA /* AppDelegate.swift in Sources */,
+				AA1234571AE4717D005C398A /* AppSettings.swift in Sources */,
+				AA1234591AE4717D005C398A /* SettingsWindowController.swift in Sources */,
 				203AEA501AE3677200B59120 /* NowPlayingService.swift in Sources */,
 				20CE9AE71ADFA9E800258EDA /* RoscoView.swift in Sources */,
 				202697F51ADFCE9B006DD45A /* Track.swift in Sources */,
@@ -351,7 +359,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -400,7 +408,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.14;
+				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
