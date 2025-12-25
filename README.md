@@ -13,13 +13,11 @@ Bowtie development stopped in early 2012 with a comment that it would be release
 
 ### Requirements
 * https://github.com/ungive/media-control (`brew install media-control`)
-* and something something
+* building it yourself
 
 ### Install
-
 - run the `build.sh` script
 - or open and run it from Xcode
 
 ### Configuration
-
 - there's a settings menu in the menu bar item. in this menu you can define which apps to or not to track
