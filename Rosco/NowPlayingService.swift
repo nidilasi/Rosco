@@ -120,7 +120,7 @@ class NowPlayingService {
                 let track = Track(name: titleString, artist: artistString)
 
                 if self.isPlaying {
-                    self.sendUpdateTrackNotification(track: track)
+                    self.sendUpdateTrackNotification(track: track, trackSourceBundleId: bundleIdentifier)
                 } else {
                     self.sendNotPlayingNotification()
                 }
@@ -135,10 +135,10 @@ class NowPlayingService {
         }
     }
 
-    func sendUpdateTrackNotification(track: Track) {
+    func sendUpdateTrackNotification(track: Track, trackSourceBundleId: String) {
         if (lastTrack != track) {
             lastTrack = track
-            NotificationCenter.default.post(name: Notification.Name("RoscoUpdateTrack"), object: track)
+            NotificationCenter.default.post(name: Notification.Name("RoscoUpdateTrack"), object: track, userInfo: ["trackSourceBundleId": trackSourceBundleId])
         }
     }
 

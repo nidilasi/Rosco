@@ -12,6 +12,8 @@ class RoscoView : NSVisualEffectView {
     
     @IBOutlet weak var titleLabel: NSTextField!
     @IBOutlet weak var artistNameLabel: NSTextField!
+
+    private var trackSourceBundleId: String?
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -53,8 +55,7 @@ class RoscoView : NSVisualEffectView {
     }
 
     func notPlaying() {
-//        titleLabel.stringValue = "Not playing"
-//        artistNameLabel.stringValue = ""
+        self.trackSourceBundleId = nil
 
         DispatchQueue.main.async { [weak self] in
             guard let window = self?.window else { return }
@@ -69,6 +70,8 @@ class RoscoView : NSVisualEffectView {
             notPlaying()
             return
         }
+
+        self.trackSourceBundleId = notification.userInfo?["trackSourceBundleId"] as? String
 
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
@@ -85,5 +88,14 @@ class RoscoView : NSVisualEffectView {
 
     @objc func notPlayingNotificationReceived(_ notification: NSNotification) {
         notPlaying()
+    }
+
+    override func mouseDown(with event: NSEvent) {
+        guard let bundleId = self.trackSourceBundleId else { return }
+
+        // opens/focuses the application that is playing the current track
+        if let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleId) {
+            NSWorkspace.shared.open(appURL)
+        }
     }
 }
