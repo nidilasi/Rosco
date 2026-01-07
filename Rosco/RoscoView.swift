@@ -91,11 +91,14 @@ class RoscoView : NSVisualEffectView {
     }
 
     override func mouseDown(with event: NSEvent) {
-        guard let bundleId = self.trackSourceBundleId else { return }
-
-        // opens/focuses the application that is playing the current track
-        if let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleId) {
-            NSWorkspace.shared.open(appURL)
+        switch AppSettings.shared.onClickAction {
+        case .doNothing:
+            return
+        case .focusTrackSource:
+            guard let bundleId = self.trackSourceBundleId else { return }
+            if let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleId) {
+                NSWorkspace.shared.open(appURL)
+            }
         }
     }
 }

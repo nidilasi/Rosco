@@ -12,10 +12,16 @@ class AppSettings {
 
     private let bundleIdentifiersKey = "RoscoBundleIdentifiers"
     private let filterModeKey = "RoscoFilterMode"
+    private let onClickActionKey = "RoscoOnClickAction"
 
     enum FilterMode: String {
         case include // Whitelist mode
         case exclude // Blacklist mode
+    }
+
+    enum OnClickAction: String {
+        case doNothing = "doNothing"
+        case focusTrackSource = "focusTrackSource"
     }
 
     private init() {
@@ -26,6 +32,10 @@ class AppSettings {
 
         if UserDefaults.standard.object(forKey: filterModeKey) == nil {
             filterMode = .exclude
+        }
+
+        if UserDefaults.standard.object(forKey: onClickActionKey) == nil {
+            onClickAction = .doNothing
         }
     }
 
@@ -48,6 +58,19 @@ class AppSettings {
         }
         set {
             UserDefaults.standard.set(newValue.rawValue, forKey: filterModeKey)
+        }
+    }
+
+    var onClickAction: OnClickAction {
+        get {
+            guard let rawValue = UserDefaults.standard.string(forKey: onClickActionKey),
+                  let action = OnClickAction(rawValue: rawValue) else {
+                return .doNothing
+            }
+            return action
+        }
+        set {
+            UserDefaults.standard.set(newValue.rawValue, forKey: onClickActionKey)
         }
     }
 

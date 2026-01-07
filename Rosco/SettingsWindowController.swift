@@ -32,17 +32,20 @@ class SettingsWindowController: NSWindowController {
 struct SettingsView: View {
     @State private var bundleIdentifiers: [String]
     @State private var filterMode: AppSettings.FilterMode
+    @State private var onClickAction: AppSettings.OnClickAction
     @State private var newBundleID: String = ""
 
     init() {
         let settings = AppSettings.shared
         _bundleIdentifiers = State(initialValue: settings.bundleIdentifiers)
         _filterMode = State(initialValue: settings.filterMode)
+        _onClickAction = State(initialValue: settings.onClickAction)
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            Text("Application Filter Settings")
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                Text("Application Filter Settings")
                 .font(.title2)
                 .fontWeight(.semibold)
 
@@ -114,16 +117,36 @@ struct SettingsView: View {
                 Button("Select App...") {
                     selectAppFromApplications()
                 }
+
+                Text("Tip: Use 'Select App' to automatically add apps, or enter bundle identifiers manually.")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
 
-            Spacer()
+            Divider()
 
-            // Helper text
-            Text("Tip: Use 'Select App' to automatically add apps, or enter bundle identifiers manually.")
-                .font(.caption)
-                .foregroundColor(.secondary)
+            // On Click Action
+            VStack(alignment: .leading, spacing: 8) {
+                Text("On Click:")
+                    .font(.headline)
+
+                Picker("", selection: $onClickAction) {
+                    Text("Do nothing").tag(AppSettings.OnClickAction.doNothing)
+                    Text("Focus Application that plays the current track").tag(AppSettings.OnClickAction.focusTrackSource)
+                }
+                .pickerStyle(.radioGroup)
+                .onChange(of: onClickAction) { newValue in
+                    AppSettings.shared.onClickAction = newValue
+                }
+
+                Text("Action to perform when clicking Rosco")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
         }
         .padding(20)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        }
         .frame(width: 500, height: 550)
     }
 
