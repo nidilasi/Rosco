@@ -1,3 +1,5 @@
+<img src="Rosco/Images.xcassets/AppIcon.appiconset/icon_128x128.png" alt="logo" title="rosco" align="right" height="60px" width="60px" />
+
 # Rosco
 Native Mac OS X desktop music accessory written in Swift
 

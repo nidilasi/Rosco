@@ -24,7 +24,7 @@ class RoscoPanelController : NSWindowController {
         panel.isOpaque = false
 
         panel.isFloatingPanel = true
-        panel.level = NSWindow.Level(rawValue: NSWindow.Level.normal.rawValue - 1)
+        panel.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.desktopWindow)))
         panel.orderFront(nil)
         panel.ignoresMouseEvents = false
 
